@@ -1,0 +1,19 @@
+Arduino CODE
+-Use PulseSensorPlayground.h that provides functions and definitions specifically designed for working with pulse sensors.(Note: Need to define USE_ARDUINO_INTERRUPTS true)
+-Using interrupts allows the Arduino to continuously monitor the pulse sensor input without blocking the execution of other code. It ensures that the pulse detection is performed in a timely and efficient manner, even if the main loop is busy with other tasks.
+-Handshake act as the flag to comfirm readiness from the ESP32 to prevent overflow data. (Initialy set as false)
+-Arduino will start to send data to esp32 once 'Ready' is sent from esp32.
+-Arduino will send 'READY' to esp32 as an acknowledgement to esp32. Data will start to read temperature and pulse sensor value from Arduino in 'send_data_to-esp()' function and print the value in Serial Monitor. 
+-'read_pulse_sensor_value()' and 'read_temp_sensor_value()' are functions to read respective sensors value with respective calculations.(Can elaborate more in this part on ADC conversion and pulseSensor library)
+
+ESP32 CODE
+-The code starts with some definitions for Blynk, including the template ID, template name, and authentication token. (Please use your own credentials after log in to Blynk.cloud)
+-network credentials is set to connect esp32 to WiFi network
+-The initWiFi() function is responsible for initializing the Wi-Fi connection. It sets the ESP32 to station mode (WIFI_STA) and connects to the Wi-Fi network using the provided SSID and password. While waiting for the connection to be established, it blinks the offline pin LED (Offline_pin) at a 1-second interval to indicate that the ESP32 is not connected.Once the WiFi connection is successful, it prints the local IP address of the ESP32 to the serial monitor.
+-Handshake is initially set as false. 
+-If the handshake with the Arduino is not yet complete, it sends a ready signal to the Arduino using the send_ready_signal_to_arduino() function and checks for a handshake acknowledgement from the Arduino using the check_handshake_ack() function.
+-The 'send_ready_signal_to_arduino()' function sends the "Ready" signal to the Arduino via Serial2, indicating that the ESP32 is ready to receive data.
+-The 'check_handshake_ack()' function checks if the Arduino has sent an acknowledgement ("ACK") via Serial2. If an acknowledgement is received, it sets the handshakeComplete flag to true.
+-The readPulseValue() and readTempValue() functions are responsible for reading the pulse value and temperature value respectively from Serial2.
+-When receive message from arduino, in order to get the numeric value, the message need to be parse and obtain the numeric value. 
+-After obtain the numeric value, each value is store in variable, tentatively, 'pulseValue' and 'tempValue'. Afterwards use Blynk.virtualWrite() to send the pulse value and temperature value to the Blynk app, using the virtual pins VIRTUAL_TEMP_PIN and VIRTUAL_PULSE_PIN.

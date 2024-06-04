@@ -1,0 +1,3 @@
+DATABASE = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=ADMIN-PC;DATABASE=MES_V1;Trusted_Connection=yes;"
+IDENTITY = "1"
+STATUS_DONE = "1"
